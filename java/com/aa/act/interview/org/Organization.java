@@ -5,6 +5,7 @@ import java.util.Optional;
 public abstract class Organization {
 
 	private Position root;
+	static int empId;
 	
 	public Organization() {
 		root = createOrganization();
@@ -21,7 +22,9 @@ public abstract class Organization {
 	 */
 	public Optional<Position> hire(Name person, String title) {
 		//your code here
-		return Optional.empty();
+		Employee employee = new Employee(++empId, person);
+		Position position = findPosition(root, title,employee);
+		return null!=position? Optional.of(position): Optional.empty();
 	}
 
 	@Override
@@ -36,4 +39,21 @@ public abstract class Organization {
 		}
 		return sb.toString();
 	}
+	
+	public Position findPosition(Position position, String title,Employee employee) {
+
+		if (position.getTitle().equals(title)) {
+			position.setEmployee(Optional.of(employee));
+			return position;
+		} else {
+			for (Position reportPosition : position.getDirectReports()) {
+				Position empPosition = findPosition(reportPosition, title,employee);
+				if (null!=empPosition)
+					return empPosition;
+			}
+			return null;
+		}
+	}
+	
+	
 }
